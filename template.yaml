@@ -16,7 +16,7 @@ Resources:
       Timeout: 30
       DeploymentPreference:
           Type: Linear10PercentEvery1Minute
-           Alarms:
+          Alarms:
             - !Ref AliasErrorMetricGreaterThanZeroAlarm
             - !Ref LatestVersionErrorMetricGreaterThanZeroAlarm
           Hooks:
@@ -31,7 +31,7 @@ Resources:
       Environment:
         Variables:
           REGION: us-east-1
-
+          
   AliasErrorMetricGreaterThanZeroAlarm:
     Type: "AWS::CloudWatch::Alarm"
     Properties:
@@ -67,6 +67,7 @@ Resources:
       Period: 60
       Statistic: Sum
       Threshold: 0
+
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
