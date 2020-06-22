@@ -16,6 +16,9 @@ Resources:
       Timeout: 30
       DeploymentPreference:
           Type: Linear10PercentEvery1Minute
+           Alarms:
+            - !Ref AliasErrorMetricGreaterThanZeroAlarm
+            - !Ref LatestVersionErrorMetricGreaterThanZeroAlarm
           Hooks:
             PreTraffic: !Ref PreTrafficHook
             PostTraffic: !Ref PostTrafficHook
@@ -28,6 +31,42 @@ Resources:
       Environment:
         Variables:
           REGION: us-east-1
+
+  AliasErrorMetricGreaterThanZeroAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorld}:live"
+        - Name: FunctionName
+          Value: !Ref HelloWorld
+      EvaluationPeriods: 2
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 60
+      Statistic: Sum
+      Threshold: 0
+
+  LatestVersionErrorMetricGreaterThanZeroAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorld}:live"
+        - Name: FunctionName
+          Value: !Ref HelloWorld
+        - Name: ExecutedVersion
+          Value: !GetAtt HelloWorld.Version.Version
+      EvaluationPeriods: 2
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 60
+      Statistic: Sum
+      Threshold: 0
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
